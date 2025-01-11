@@ -1,6 +1,7 @@
-﻿namespace TechnicalTestBackendProject.CQRS.Queries
+﻿using MediatR;
+using TechnicalTestBackendProject.DTOs;
+
+namespace TechnicalTestBackendProject.CQRS.Queries
 {
-    public class GetBoardByIdQuery
-    {
-    }
+    public record GetBoardByIdQuery(int Id) : IRequest<BoardReadDTO>;
 }

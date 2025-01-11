@@ -1,6 +1,8 @@
-﻿namespace TechnicalTestBackendProject.CQRS.Commands
+﻿using MediatR;
+using TechnicalTestBackendProject.DTOs;
+using TechnicalTestBackendProject.Models;
+
+namespace TechnicalTestBackendProject.CQRS.Commands
 {
-    public class CreateTaskCommand
-    {
-    }
+    public record CreateTaskCommand(int Id, string Title, string Description, string BoardId, TaskState TaskState) : IRequest<TaskCreateDTO>;
 }

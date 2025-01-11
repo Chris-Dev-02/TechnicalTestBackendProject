@@ -1,6 +1,7 @@
-﻿namespace TechnicalTestBackendProject.CQRS.Commands
+﻿using MediatR;
+using TechnicalTestBackendProject.DTOs;
+
+namespace TechnicalTestBackendProject.CQRS.Commands
 {
-    public class CreateBoardCommand
-    {
-    }
+    public record CreateBoardCommand(string Name, string Description, string CreatesBy) : IRequest<BoardCreateDTO>;
 }

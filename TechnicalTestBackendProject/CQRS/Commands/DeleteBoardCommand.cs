@@ -1,6 +1,6 @@
-﻿namespace TechnicalTestBackendProject.CQRS.Commands
+﻿using MediatR;
+
+namespace TechnicalTestBackendProject.CQRS.Commands
 {
-    public class DeleteBoardCommand
-    {
-    }
+    public record DeleteBoardCommand(int Id) : IRequest<bool>;
 }

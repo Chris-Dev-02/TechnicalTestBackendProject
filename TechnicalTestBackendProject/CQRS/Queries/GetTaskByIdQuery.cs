@@ -1,6 +1,7 @@
-﻿namespace TechnicalTestBackendProject.CQRS.Queries
+﻿using MediatR;
+using TechnicalTestBackendProject.DTOs;
+
+namespace TechnicalTestBackendProject.CQRS.Queries
 {
-    public class GetTaskByIdQuery
-    {
-    }
+    public record GetTaskByIdQuery : IRequest<TaskReadDTO>;
 }

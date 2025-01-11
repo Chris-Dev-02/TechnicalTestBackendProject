@@ -1,6 +1,6 @@
-﻿namespace TechnicalTestBackendProject.CQRS.Commands
+﻿using MediatR;
+
+namespace TechnicalTestBackendProject.CQRS.Commands
 {
-    public class DeleteTaskCommand
-    {
-    }
+    public record DeleteTaskCommand(int Id) : IRequest<bool>;
 }
