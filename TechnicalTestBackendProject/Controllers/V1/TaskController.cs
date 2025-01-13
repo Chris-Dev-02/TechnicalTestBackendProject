@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TechnicalTestBackendProject.DTOs;
 
 namespace TechnicalTestBackendProject.Controllers.V1
 {
@@ -7,7 +9,13 @@ namespace TechnicalTestBackendProject.Controllers.V1
     [ApiController]
     public class TaskController : ControllerBase
     {
-        public TaskController() { }
+        private readonly IValidator<TaskCreateDTO> _createTaskValidator;
+        private readonly IValidator<TaskUpdateDTO> _updateTaskValidator;
+        public TaskController(IValidator<TaskCreateDTO> createTaskValidator, IValidator<TaskUpdateDTO> updateTaskValidator) 
+        {
+            _createTaskValidator = createTaskValidator;
+            _updateTaskValidator = updateTaskValidator;
+        }
 
         [HttpGet]
         public IActionResult GetAllTasks()
@@ -23,15 +31,27 @@ namespace TechnicalTestBackendProject.Controllers.V1
         }
 
         [HttpPost]
-        public IActionResult CreateTask()
+        public IActionResult CreateTask([FromBody] TaskCreateDTO TaskData)
         {
+            var validationResult = _createTaskValidator.Validate(TaskData);
+
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
+
             return Ok();
         }
 
         [HttpPut]
-        [Route("{id}")]
-        public IActionResult UpdateTask(int id)
+        public IActionResult UpdateTask([FromBody] TaskUpdateDTO TaskData)
         {
+            var validationResult = _updateTaskValidator.Validate(TaskData);
+
+            if(validationResult.IsValid) {
+                return BadRequest(validationResult.Errors);
+            }
+
             return Ok();
         }
 

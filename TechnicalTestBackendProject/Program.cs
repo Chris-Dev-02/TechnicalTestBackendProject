@@ -10,6 +10,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using TechnicalTestBackendProject.Repository;
 using TechnicalTestBackendProject.DTOs;
+using TechnicalTestBackendProject.Validators;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -74,6 +76,14 @@ builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IRepository<UserReadDTO, UserCreateDTO, UserUpdateDTO>, UserRepository>();
 builder.Services.AddScoped<IRepository<BoardReadDTO, BoardCreateDTO, BoardUpdateDTO>, BoardRepository>();
 builder.Services.AddScoped<IRepository<TaskReadDTO, TaskCreateDTO, TaskUpdateDTO>, TaskRepository>();
+
+// <---- Validators configuration ---->
+builder.Services.AddScoped<IValidator<UserCreateDTO>, SignupValidator>();
+builder.Services.AddScoped<IValidator<LoginDTO>, LoginValidator>();
+builder.Services.AddScoped<IValidator<BoardCreateDTO>, CreateBoardValidator>();
+builder.Services.AddScoped<IValidator<BoardUpdateDTO>, UpdateBoardValidator>();
+builder.Services.AddScoped<IValidator<TaskCreateDTO>, CreateTaskValidator>();
+builder.Services.AddScoped<IValidator<TaskUpdateDTO>, UpdateTaskValidator>();
 
 
 builder.Services.AddControllers();

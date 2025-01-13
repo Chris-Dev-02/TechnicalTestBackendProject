@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TechnicalTestBackendProject.DTOs;
 
 namespace TechnicalTestBackendProject.Controllers.V1
 {
@@ -7,7 +9,13 @@ namespace TechnicalTestBackendProject.Controllers.V1
     [ApiController]
     public class BoardController : ControllerBase
     {
-        public BoardController() { }
+        private readonly IValidator<BoardCreateDTO> _createBoardValidator;
+        private readonly IValidator<BoardUpdateDTO> _updateBoardValidator;
+        public BoardController(IValidator<BoardCreateDTO> createBoardValidator, IValidator<BoardUpdateDTO> updateBoardValidator) 
+        {
+            _createBoardValidator = createBoardValidator;
+            _updateBoardValidator = updateBoardValidator;
+        }
 
         [HttpGet]
         public IActionResult GetAllBoards()
@@ -23,15 +31,26 @@ namespace TechnicalTestBackendProject.Controllers.V1
         }
 
         [HttpPost]
-        public IActionResult CreateBoard()
+        public IActionResult CreateBoard([FromBody] BoardCreateDTO BoardData)
         {
+            var validationResult = _createBoardValidator.Validate(BoardData);
+
+            if(validationResult.IsValid) {
+                return BadRequest(validationResult.Errors);
+            }
+
             return Ok();
         }
 
         [HttpPut]
-        [Route("{id}")]
-        public IActionResult UpdateBoard(int id)
+        public IActionResult UpdateBoard([FromBody] BoardUpdateDTO BoardData)
         {
+            var validationResult = _updateBoardValidator.Validate(BoardData);
+
+            if(validationResult.IsValid) {
+                return BadRequest(validationResult.Errors);
+            }
+
             return Ok();
         }
 
