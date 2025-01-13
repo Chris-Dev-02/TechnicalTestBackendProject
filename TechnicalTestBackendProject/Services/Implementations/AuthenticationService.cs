@@ -4,26 +4,24 @@ using TechnicalTestBackendProject.Services.Interfaces;
 
 namespace TechnicalTestBackendProject.Services.Implementations
 {
-    public class TaskService : ICRUDActionsService<TaskReadDTO, TaskCreateDTO, TaskUpdateDTO>
+    public class AuthenticationService : IAuthenticationService
     {
-        public Task<IEnumerable<TaskReadDTO>> Get()
+        public Task<IEnumerable<Role>> GetAllRoles()
         {
             throw new NotImplementedException();
         }
 
-        public Task<TaskReadDTO> GetById(int id)
+        public Task<UserReadDTO> Login(UserCreateDTO userLoginDTO)
         {
             throw new NotImplementedException();
         }
-        public Task<TaskReadDTO> Create(TaskCreateDTO entity)
+
+        public Task<UserReadDTO> Logout()
         {
             throw new NotImplementedException();
         }
-        public Task<TaskReadDTO> Update(TaskUpdateDTO entity)
-        {
-            throw new NotImplementedException();
-        }
-        public Task<TaskReadDTO> Delete(int id)
+
+        public Task<UserReadDTO> Signup(UserCreateDTO userCreateDTO)
         {
             throw new NotImplementedException();
         }

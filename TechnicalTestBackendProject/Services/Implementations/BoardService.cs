@@ -4,18 +4,8 @@ using TechnicalTestBackendProject.Services.Interfaces;
 
 namespace TechnicalTestBackendProject.Services.Implementations
 {
-    public class BoardService : IBoardService
+    public class BoardService : ICRUDActionsService<BoardReadDTO, BoardCreateDTO, BoardUpdateDTO>
     {
-        public Task<BoardReadDTO> Create(BoardCreateDTO boardCreateDto)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<BoardReadDTO> Delete(int id)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<IEnumerable<BoardReadDTO>> Get()
         {
             throw new NotImplementedException();
@@ -25,10 +15,20 @@ namespace TechnicalTestBackendProject.Services.Implementations
         {
             throw new NotImplementedException();
         }
-
-        public Task<BoardReadDTO> Update(BoardUpdateDTO boardUpdateDto)
+        public Task<BoardReadDTO> Create(BoardCreateDTO entity)
         {
             throw new NotImplementedException();
         }
+        public Task<BoardReadDTO> Update(BoardUpdateDTO entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<BoardReadDTO> Delete(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+
     }
 }

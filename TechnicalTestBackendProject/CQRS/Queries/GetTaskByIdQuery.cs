@@ -3,5 +3,5 @@ using TechnicalTestBackendProject.DTOs;
 
 namespace TechnicalTestBackendProject.CQRS.Queries
 {
-    public record GetTaskByIdQuery : IRequest<TaskReadDTO>;
+    public record GetTaskByIdQuery(int Id) : IRequest<TaskReadDTO>;
 }

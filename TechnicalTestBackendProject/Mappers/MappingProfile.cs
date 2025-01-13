@@ -11,7 +11,7 @@ namespace TechnicalTestBackendProject.Mappers
             #region Model to DTO mappings
 
             // UserModel to UserReadDTO
-            CreateMap<UserModel, UserReadDTO>()
+            CreateMap<UserDTO, UserReadDTO>()
                 .ForMember(dest => dest.Boards, opt => opt.MapFrom(src => src.Boards));
 
             // TaskModel to TaskReadDTO
@@ -27,11 +27,11 @@ namespace TechnicalTestBackendProject.Mappers
             #region DTO to Model mappings
 
             // UserCreateDTO to UserModel
-            CreateMap<UserCreateDTO, UserModel>()
+            CreateMap<UserCreateDTO, UserDTO>()
                 .ForMember(dest => dest.Password, opt => opt.Ignore());  // Password will be handled separately, such as by hashing
 
             // LoginDTO to UserModel (for user login, you would typically authenticate against a stored hash)
-            CreateMap<LoginDTO, UserModel>();
+            CreateMap<LoginDTO, UserDTO>();
 
             // UserModel to UserAuthDTO (for returning user data after login)
             CreateMap<UserModel, UserAuthDTO>();

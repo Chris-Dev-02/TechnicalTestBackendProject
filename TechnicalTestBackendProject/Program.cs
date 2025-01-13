@@ -3,6 +3,13 @@ using MediatR;
 using StackExchange.Redis;
 using TechnicalTestBackendProject.Data;
 using System.Text.Json.Serialization;
+using TechnicalTestBackendProject.Services.Interfaces;
+using TechnicalTestBackendProject.Services.Implementations;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using TechnicalTestBackendProject.Repository;
+using TechnicalTestBackendProject.DTOs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,8 +46,34 @@ builder.Services.AddCors(options =>
             .AllowCredentials());
 });
 
+// <---- Configure JWT Authentication ---->
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.RequireHttpsMetadata = false;
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]))
+        };
+    });
+
 // <---- AutoMapper configuration ---->
 builder.Services.AddAutoMapper(typeof(Program));
+
+// <---- Custom general services configuration ---->
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<ICRUDActionsService<BoardReadDTO, BoardCreateDTO, BoardUpdateDTO>, BoardService>();
+builder.Services.AddScoped<ICRUDActionsService<TaskReadDTO, TaskCreateDTO, TaskUpdateDTO>, TaskService>();
+builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+// <---- Custom repositories configuration ---->
+builder.Services.AddScoped<IRepository<UserReadDTO, UserCreateDTO, UserUpdateDTO>, UserRepository>();
+builder.Services.AddScoped<IRepository<BoardReadDTO, BoardCreateDTO, BoardUpdateDTO>, BoardRepository>();
+builder.Services.AddScoped<IRepository<TaskReadDTO, TaskCreateDTO, TaskUpdateDTO>, TaskRepository>();
 
 
 builder.Services.AddControllers();
@@ -60,6 +93,8 @@ if (app.Environment.IsDevelopment())
 app.UseCors(customCorsPolicy);
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

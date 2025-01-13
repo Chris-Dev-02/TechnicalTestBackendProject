@@ -4,5 +4,5 @@ using TechnicalTestBackendProject.Models;
 
 namespace TechnicalTestBackendProject.CQRS.Commands
 {
-    public record UpdateUserCommand(int Id, string Username, string Email, string Paswword, Role UserRole) : IRequest<UserUpdateDTO>;
+    public record UpdateUserCommand(UserUpdateDTO userData) : IRequest<UserReadDTO>;
 }

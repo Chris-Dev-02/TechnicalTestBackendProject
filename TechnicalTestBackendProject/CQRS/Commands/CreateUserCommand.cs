@@ -4,5 +4,5 @@ using TechnicalTestBackendProject.Models;
 
 namespace TechnicalTestBackendProject.CQRS.Commands
 {
-    public record CreateUserCommand(string Username, string Email, string Paswword, Role UserRole) : IRequest<UserCreateDTO>;
+    public record CreateUserCommand(UserCreateDTO userData) : IRequest<UserReadDTO>;
 }
