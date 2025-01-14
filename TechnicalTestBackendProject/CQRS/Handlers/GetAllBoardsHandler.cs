@@ -7,16 +7,16 @@ namespace TechnicalTestBackendProject.CQRS.Handlers
 {
     public class GetAllBoardsHandler : IRequestHandler<GetAllBoardsQuery, IEnumerable<BoardReadDTO>>
     {
-        private readonly IRepository<BoardReadDTO, BoardCreateDTO, BoardUpdateDTO> _repository;
+        private readonly IBoardRepository _repository;
 
-        public GetAllBoardsHandler(IRepository<BoardReadDTO, BoardCreateDTO, BoardUpdateDTO> repository)
+        public GetAllBoardsHandler(IBoardRepository repository)
         {
             _repository = repository;
         }
 
         public async Task<IEnumerable<BoardReadDTO>> Handle(GetAllBoardsQuery request, CancellationToken cancellationToken)
         {
-            return await _repository.GetAllAsync();
+            return await _repository.GetAllBoardsAsync();
         }
     }
 }

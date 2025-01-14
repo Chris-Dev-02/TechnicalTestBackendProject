@@ -1,42 +1,64 @@
-﻿using TechnicalTestBackendProject.DTOs;
-using TechnicalTestBackendProject.Models;
+﻿using MediatR;
+using TechnicalTestBackendProject.CQRS.Commands;
+using TechnicalTestBackendProject.CQRS.Queries;
+using TechnicalTestBackendProject.DTOs;
 using TechnicalTestBackendProject.Services.Interfaces;
 
 namespace TechnicalTestBackendProject.Services.Implementations
 {
-    public class BoardService : ICRUDActionsService<BoardReadDTO, BoardCreateDTO, BoardUpdateDTO>, IBoardSpecificActions
+    public class BoardService : IBoardService
     {
-        public Task<IEnumerable<BoardReadDTO>> Get()
+        private readonly IMediator _mediator;
+        public BoardService(IMediator mediator) 
+        {
+            _mediator = mediator;
+        }
+        public async Task<IEnumerable<BoardReadDTO>> GetAllBoardsAsync()
+        {
+            return await _mediator.Send(new GetAllBoardsQuery());
+        }
+
+        public Task<IEnumerator<BoardReadDTO>> GetAllBoardsByUserAsync(int userId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<BoardReadDTO> GetById(int id)
+        public async Task<BoardReadDTO> GetBoardByIdAsync(int id, int userId)
         {
-            throw new NotImplementedException();
+            var board = await _mediator.Send(new GetBoardByIdQuery(id));
+            if(board == null || board.CreatedById != userId.ToString()) return null;
+
+            return board;
         }
-        public Task<BoardReadDTO> Create(BoardCreateDTO entity)
-        {
-            throw new NotImplementedException();
-        }
-        public Task<BoardReadDTO> Update(BoardUpdateDTO entity)
+
+        public Task GetStatisticsAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<BoardReadDTO> Delete(int id)
+        public async Task<BoardReadDTO> CreateBoardAsync(BoardCreateDTO entity)
         {
-            throw new NotImplementedException();
+            var board = await _mediator.Send(new CreateBoardCommand(entity));
+
+            return board;
+        }
+        public async Task<BoardReadDTO> UpdateBoardAsync(BoardUpdateDTO entity, int userId)
+        {
+            var board = await _mediator.Send(new GetBoardByIdQuery(entity.Id));
+            if (board == null || board.CreatedById != userId.ToString()) return null;
+
+            var boardUpdated = await _mediator.Send(new UpdateBoardCommand(entity));
+
+            return boardUpdated;
         }
 
-        public Task GetAllBoardsByUser(int userId)
+        public async Task<bool> DeleteBoardAsync(int id, int userId)
         {
-            throw new NotImplementedException();
-        }
+            var board = await _mediator.Send(new GetBoardByIdQuery(id));
+            if (board == null || board.CreatedById != userId.ToString()) return false;
 
-        public Task GetStatistics()
-        {
-            throw new NotImplementedException();
+            var result = await _mediator.Send(new DeleteBoardCommand(id));
+            return result;
         }
     }
 }

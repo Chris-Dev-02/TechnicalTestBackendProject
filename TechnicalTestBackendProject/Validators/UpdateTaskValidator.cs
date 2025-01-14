@@ -18,7 +18,7 @@ namespace TechnicalTestBackendProject.Validators
             RuleFor(x => x.Description)
                 .NotEmpty()
                 .WithMessage("Description is required");
-            RuleFor(x => x.TaskState)
+            RuleFor(x => x.TaskStatus)
                 .NotEmpty()
                 .WithMessage("Task State is required");
         }

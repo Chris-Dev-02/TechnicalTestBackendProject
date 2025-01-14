@@ -70,15 +70,14 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 // <---- Custom general services configuration ---->
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-builder.Services.AddScoped<ICRUDActionsService<BoardReadDTO, BoardCreateDTO, BoardUpdateDTO>, BoardService>();
-builder.Services.AddScoped<ICRUDActionsService<TaskReadDTO, TaskCreateDTO, TaskUpdateDTO>, TaskService>();
+builder.Services.AddScoped<IBoardService, BoardService>();
+builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 // <---- Custom repositories configuration ---->
-builder.Services.AddScoped<IRepository<UserReadDTO, UserCreateDTO, UserUpdateDTO>, UserRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IRepository<BoardReadDTO, BoardCreateDTO, BoardUpdateDTO>, BoardRepository>();
-builder.Services.AddScoped<IRepository<TaskReadDTO, TaskCreateDTO, TaskUpdateDTO>, TaskRepository>();
+builder.Services.AddScoped<IBoardRepository, BoardRepository>();
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 
 // <---- Validators configuration ---->
 builder.Services.AddScoped<IValidator<UserCreateDTO>, SignupValidator>();

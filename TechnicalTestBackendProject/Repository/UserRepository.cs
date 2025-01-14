@@ -8,7 +8,7 @@ using TechnicalTestBackendProject.Models;
 
 namespace TechnicalTestBackendProject.Repository
 {
-    public class UserRepository : IRepository<UserReadDTO, UserCreateDTO, UserUpdateDTO>, IUserRepository
+    public class UserRepository : IUserRepository
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IConnectionMultiplexer _redis;
@@ -23,7 +23,7 @@ namespace TechnicalTestBackendProject.Repository
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<UserReadDTO>> GetAllAsync()
+        public async Task<IEnumerable<UserReadDTO>> GetAllUsersAsync()
         {
             // Check if the data is in the cache
             var cachedUsers = await _cache.StringGetAsync("Users");
@@ -40,7 +40,7 @@ namespace TechnicalTestBackendProject.Repository
             return users.Select(user => _mapper.Map<UserReadDTO>(user));
         }
 
-        public async Task<UserReadDTO> GetByIdAsync(int id)
+        public async Task<UserReadDTO> GetUserByIdAsync(int id)
         {
             // Check if the data is in the cache
             var cachedUser = _cache.StringGet($"User:{id}");
@@ -61,7 +61,7 @@ namespace TechnicalTestBackendProject.Repository
             return UserReadDTO;
         }
 
-        public async Task<UserReadDTO> AddAsync(UserCreateDTO entity)
+        public async Task<UserReadDTO> AddUserAsync(UserCreateDTO entity)
         {
             var newUser = _mapper.Map<UserModel>(entity);
 
@@ -76,7 +76,7 @@ namespace TechnicalTestBackendProject.Repository
             return UserReadDTO;
         }
 
-        public async Task<UserReadDTO> UpdateAsync(UserUpdateDTO entity)
+        public async Task<UserReadDTO> UpdateUserAsync(UserUpdateDTO entity)
         {
             var userToUpdate = await _dbContext.Users.FindAsync(entity.Id);
 
@@ -97,7 +97,7 @@ namespace TechnicalTestBackendProject.Repository
             return UserReadDTO;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeleteUserAsync(int id)
         {
             var userToDelete = _dbContext.Users.Find(id);
 
@@ -114,14 +114,14 @@ namespace TechnicalTestBackendProject.Repository
             return true;
         }
 
-        public async Task<UserDTO> GetUserByUsername(string username)
+        public async Task<UserDTO> GetUserByUsernameAsync(string username)
         {
             var user = await _dbContext.Users.FirstOrDefaultAsync(user => user.Username == username);
 
             return _mapper.Map<UserDTO>(user);
         }
 
-        public async Task<UserDTO> GetUserByEmail(string email)
+        public async Task<UserDTO> GetUserByEmailAsync(string email)
         {
             var user = await _dbContext.Users.FirstOrDefaultAsync(user => user.Email == email);
 

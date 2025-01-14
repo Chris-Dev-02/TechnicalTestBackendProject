@@ -11,16 +11,16 @@ namespace TechnicalTestBackendProject.CQRS.Handlers
 {
     public class CreateBoardHandler : IRequestHandler<CreateBoardCommand, BoardReadDTO>
     {
-        private readonly IRepository<BoardReadDTO, BoardCreateDTO, BoardUpdateDTO> _repository;
+        private readonly IBoardRepository _repository;
 
-        public CreateBoardHandler(IRepository<BoardReadDTO, BoardCreateDTO, BoardUpdateDTO> repository)
+        public CreateBoardHandler(IBoardRepository repository)
         {
             _repository = repository;
         }
 
         public async Task<BoardReadDTO> Handle(CreateBoardCommand request, CancellationToken cancellationToken)
         {
-            return await _repository.AddAsync(request.boardData);
+            return await _repository.AddBoardAsync(request.boardData);
         }
     }
 }

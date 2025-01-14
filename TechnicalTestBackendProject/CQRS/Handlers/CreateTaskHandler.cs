@@ -7,16 +7,16 @@ namespace TechnicalTestBackendProject.CQRS.Handlers
 {
     public class CreateTaskHandler : IRequestHandler<CreateTaskCommand, TaskReadDTO>
     {
-        private readonly IRepository<TaskReadDTO, TaskCreateDTO, TaskUpdateDTO> _repository;
+        private readonly ITaskRepository _repository;
 
-        public CreateTaskHandler(IRepository<TaskReadDTO, TaskCreateDTO, TaskUpdateDTO> repository)
+        public CreateTaskHandler(ITaskRepository repository)
         {
             _repository = repository;
         }
 
         public async Task<TaskReadDTO> Handle(CreateTaskCommand request, CancellationToken cancellationToken)
         {
-            return await _repository.AddAsync(request.taskData);
+            return await _repository.AddTaskAsync(request.taskData);
         }
     }
 }

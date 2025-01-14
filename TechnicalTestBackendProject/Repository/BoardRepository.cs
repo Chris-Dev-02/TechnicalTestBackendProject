@@ -10,7 +10,7 @@ using TechnicalTestBackendProject.Models;
 
 namespace TechnicalTestBackendProject.Repository
 {
-    public class BoardRepository : IRepository<BoardReadDTO, BoardCreateDTO, BoardUpdateDTO>
+    public class BoardRepository : IBoardRepository
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IConnectionMultiplexer _redis;
@@ -25,7 +25,7 @@ namespace TechnicalTestBackendProject.Repository
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<BoardReadDTO>> GetAllAsync()
+        public async Task<IEnumerable<BoardReadDTO>> GetAllBoardsAsync()
         {
             // Check if boards are on cache
             var cacheBoards = _cache.StringGet("Boards");
@@ -42,7 +42,7 @@ namespace TechnicalTestBackendProject.Repository
             return boards.Select(board => _mapper.Map<BoardReadDTO>(board));
         }
 
-        public async Task<BoardReadDTO> GetByIdAsync(int id)
+        public async Task<BoardReadDTO> GetBoardByIdAsync(int id)
         {
             // Check if the board is in the cache
             var cacheBoard = _cache.StringGet($"Board:{id}");
@@ -62,7 +62,7 @@ namespace TechnicalTestBackendProject.Repository
 
             return BoardReadDTO;
         }
-        public async Task<BoardReadDTO> AddAsync(BoardCreateDTO entity)
+        public async Task<BoardReadDTO> AddBoardAsync(BoardCreateDTO entity)
         {
             var newBoard = _mapper.Map<BoardModel>(entity);
 
@@ -78,7 +78,7 @@ namespace TechnicalTestBackendProject.Repository
         }
 
 
-        public async Task<BoardReadDTO> UpdateAsync(BoardUpdateDTO entity)
+        public async Task<BoardReadDTO> UpdateBoardAsync(BoardUpdateDTO entity)
         {
             var boardToUpdate = await _dbContext.Boards.FindAsync(entity.Id);
             //var taskToUpdate = await _dbContext.Boards.FindAsync(new object[] {request.Id}, cancellationToken);
@@ -102,7 +102,7 @@ namespace TechnicalTestBackendProject.Repository
 
             return BoardReadDTO;
         }
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeleteBoardAsync(int id)
         {
             var boardToDelete = await _dbContext.Boards.FindAsync(id);
             //var boardToDelete = await _dbContext.Boards.FindAsync(new object[] { request.Id }, cancellationToken);
@@ -119,6 +119,15 @@ namespace TechnicalTestBackendProject.Repository
             _cache.KeyDelete($"Board:{boardToDelete.Id}");
 
             return true;
+        }
+
+        public async Task<IEnumerable<BoardReadDTO>> GetBoardsByUserIdAsync(int userId)
+        {
+            var boards = await _dbContext.Boards
+                .Where(board => board.CreatedById == userId.ToString())
+                .ToListAsync();
+
+            return boards.Select(board => _mapper.Map<BoardReadDTO>(board));
         }
     }
 }

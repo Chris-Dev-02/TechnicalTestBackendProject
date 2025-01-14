@@ -19,6 +19,6 @@ namespace TechnicalTestBackendProject.Models
         public string? BoardId { get; set; }
         [ForeignKey("BoardId")]
         public BoardModel? Board { get; set; }
-        public TaskStatusEnum TaskState { get; set; }
+        public TaskStatusEnum TaskStatus { get; set; }
     }
 }

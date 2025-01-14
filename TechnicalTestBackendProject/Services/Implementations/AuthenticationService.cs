@@ -15,20 +15,17 @@ namespace TechnicalTestBackendProject.Services.Implementations
     {
         private readonly IJwtTokenService _jwtTokenService;
         private readonly IPasswordHasherService _passwordHasherService;
-        private readonly IUserRepository _userRepository;
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
         public AuthenticationService(
             IJwtTokenService jwtTokenService, 
             IPasswordHasherService passwordHasherService, 
-            IUserRepository userRepository,
             IMediator mediator,
             IMapper mapper
             )
         {
             _jwtTokenService = jwtTokenService;
             _passwordHasherService = passwordHasherService;
-            _userRepository = userRepository;
             _mediator = mediator;
             _mapper = mapper;
         }
@@ -61,7 +58,7 @@ namespace TechnicalTestBackendProject.Services.Implementations
         {
             userLoginDTO.Password = _passwordHasherService.HashPassword(userLoginDTO.Password);
 
-            var user = await _userRepository.GetUserByEmail(userLoginDTO.Email);
+            var user = await _mediator.Send(new GetUserByEmailQuery((userLoginDTO.Email)));
 
             if (user == null || _passwordHasherService.VerifyPassword(user.Password, userLoginDTO.Password))
             {

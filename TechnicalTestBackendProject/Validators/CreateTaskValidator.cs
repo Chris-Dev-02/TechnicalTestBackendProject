@@ -15,7 +15,7 @@ namespace TechnicalTestBackendProject.Validators
                 .WithMessage("Description is required")
                 .Length(6, 300)
                 .WithMessage("Description must be between 6 and 300 characters");
-            RuleFor(x => x.TaskState)
+            RuleFor(x => x.TaskStatus)
                 .NotEmpty()
                 .WithMessage("Task State is required");
         }

@@ -8,7 +8,7 @@ using TechnicalTestBackendProject.Models;
 
 namespace TechnicalTestBackendProject.Repository
 {
-    public class TaskRepository : IRepository<TaskReadDTO, TaskCreateDTO, TaskUpdateDTO>
+    public class TaskRepository : ITaskRepository
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IConnectionMultiplexer _redis;
@@ -23,7 +23,7 @@ namespace TechnicalTestBackendProject.Repository
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<TaskReadDTO>> GetAllAsync()
+        public async Task<IEnumerable<TaskReadDTO>> GetAllTasksAsync()
         {
             // Check if the data is in the cache
             var cachedTasks = await _cache.StringGetAsync("Tasks");
@@ -40,7 +40,7 @@ namespace TechnicalTestBackendProject.Repository
             return tasks.Select(task => _mapper.Map<TaskReadDTO>(task));
         }
 
-        public async Task<TaskReadDTO> GetByIdAsync(int id)
+        public async Task<TaskReadDTO> GetTaskByIdAsync(int id)
         {
             // Check if the data is in the cache
             var cachedTask = _cache.StringGet($"Task:{id}");
@@ -61,7 +61,7 @@ namespace TechnicalTestBackendProject.Repository
             return TaskReadDTO;
         }
 
-        public async Task<TaskReadDTO> AddAsync(TaskCreateDTO entity)
+        public async Task<TaskReadDTO> AddTaskAsync(TaskCreateDTO entity)
         {
             var newTask = _mapper.Map<TaskModel>(entity);
 
@@ -76,7 +76,7 @@ namespace TechnicalTestBackendProject.Repository
             return TaskReadDTO;
         }
 
-        public async Task<TaskReadDTO> UpdateAsync(TaskUpdateDTO entity)
+        public async Task<TaskReadDTO> UpdateTaskAsync(TaskUpdateDTO entity)
         {
             var taskToUpdate = await _dbContext.Tasks.FindAsync(entity.Id);
 
@@ -87,7 +87,7 @@ namespace TechnicalTestBackendProject.Repository
 
             taskToUpdate.Title = entity.Title;
             taskToUpdate.Description = entity.Description;
-            taskToUpdate.TaskState = entity.TaskState;
+            taskToUpdate.TaskStatus = entity.TaskStatus;
 
             taskToUpdate = _mapper.Map<TaskUpdateDTO, TaskModel>(entity, taskToUpdate);
 
@@ -101,7 +101,7 @@ namespace TechnicalTestBackendProject.Repository
             return TaskReadDTO;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeleteTaskAsync(int id)
         {
             var taskToDelete = await _dbContext.Tasks.FindAsync(id);
 
@@ -119,5 +119,11 @@ namespace TechnicalTestBackendProject.Repository
             return true;
         }
 
+        public async Task<IEnumerable<TaskReadDTO>> GetTasksByBoardIdAndUserIdAsync(int boarId)
+        {
+            var tasks = await _dbContext.Tasks.Where(t => t.BoardId == boarId.ToString() ).ToListAsync();
+
+            return tasks.Select(task => _mapper.Map<TaskReadDTO>(task));
+        }
     }
 }

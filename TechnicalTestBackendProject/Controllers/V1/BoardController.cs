@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using TechnicalTestBackendProject.DTOs;
+using TechnicalTestBackendProject.Services.Interfaces;
 
 namespace TechnicalTestBackendProject.Controllers.V1
 {
@@ -12,25 +14,37 @@ namespace TechnicalTestBackendProject.Controllers.V1
     {
         private readonly IValidator<BoardCreateDTO> _createBoardValidator;
         private readonly IValidator<BoardUpdateDTO> _updateBoardValidator;
-        public BoardController(IValidator<BoardCreateDTO> createBoardValidator, IValidator<BoardUpdateDTO> updateBoardValidator) 
+        private readonly IBoardService _boardService;
+
+        public BoardController(
+            IValidator<BoardCreateDTO> createBoardValidator, 
+            IValidator<BoardUpdateDTO> updateBoardValidator,
+            IBoardService boardService)
         {
             _createBoardValidator = createBoardValidator;
             _updateBoardValidator = updateBoardValidator;
+            _boardService = boardService;
         }
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        [Route("list")]
         public IActionResult GetAllBoards()
         {
-            return Ok();
+            var boards = _boardService.GetAllBoardsAsync();
+            return Ok(boards);
         }
 
         [HttpGet]
         [Authorize]
-        public IActionResult GetAllBoardsByUserId()
+        [Route("user/{id}")]
+        public async Task<IActionResult> GetBoardsByUserId(int userId)
         {
-            return Ok();
+            var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (currentUserId == null || int.Parse(currentUserId) != userId) return Unauthorized();
+
+            //var boards = _boardService.GetAllBoardsByUserAsync(userId);
+            var boards = await _boardService.GetAllBoardsByUserAsync(userId);
+            return Ok(boards);
         }
 
         [HttpGet]
@@ -46,12 +60,18 @@ namespace TechnicalTestBackendProject.Controllers.V1
         [Route("{id}")]
         public IActionResult GetBoardById(int id)
         {
-            return Ok();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) Unauthorized();
+
+            var board = _boardService.GetBoardByIdAsync(id, int.Parse(userId));
+            if (board == null) NotFound();
+
+            return Ok(board);
         }
 
         [HttpPost]
         [Authorize]
-        public IActionResult CreateBoard([FromBody] BoardCreateDTO BoardData)
+        public async Task<IActionResult> CreateBoard([FromBody] BoardCreateDTO BoardData)
         {
             var validationResult = _createBoardValidator.Validate(BoardData);
 
@@ -59,7 +79,13 @@ namespace TechnicalTestBackendProject.Controllers.V1
                 return BadRequest(validationResult.Errors);
             }
 
-            return Ok();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) Unauthorized();
+            BoardData.CreatedById = userId;
+
+            var board = await _boardService.CreateBoardAsync(BoardData);
+
+            return Ok(board);
         }
 
         [HttpPut]
@@ -72,15 +98,27 @@ namespace TechnicalTestBackendProject.Controllers.V1
                 return BadRequest(validationResult.Errors);
             }
 
-            return Ok();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) Unauthorized();
+
+            var board = _boardService.UpdateBoardAsync(BoardData, int.Parse(userId));
+            if (board == null) NotFound();
+
+            return Ok(board);
         }
 
         [HttpDelete]
         [Authorize]
         [Route("{id}")]
-        public IActionResult DeleteBoard(int id)
+        public async Task<IActionResult> DeleteBoard(int id)
         {
-            return Ok();
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null) return Unauthorized();
+
+            var result = await _boardService.DeleteBoardAsync(id, int.Parse(userId));
+            if (!result) return NotFound();
+
+            return NoContent();
         }
     }
 }

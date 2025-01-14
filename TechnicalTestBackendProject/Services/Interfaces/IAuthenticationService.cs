@@ -11,5 +11,11 @@ namespace TechnicalTestBackendProject.Services.Interfaces
         Task AssignRole(AssignRoleDTO assignRoleDTO);
         Task<UserReadDTO> Logout();
 
+        //Task<IEnumerable<UserReadDTO>> GetAllUsersAsync();
+        //Task<UserReadDTO> GetUserByIdAsync(int id, int userId);
+        //Task<UserReadDTO> CreateUserAsync(UserCreateDTO entity);
+        //Task<UserReadDTO> UpdateUserAsync(UserUpdateDTO entity);
+        //Task<bool> DeleteUserAsync(int id);
+
     }
 }

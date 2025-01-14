@@ -7,16 +7,16 @@ namespace TechnicalTestBackendProject.CQRS.Handlers
 {
     public class DeleteBoardHandler : IRequestHandler<DeleteBoardCommand, bool>
     {
-        private readonly IRepository<BoardReadDTO, BoardCreateDTO, BoardUpdateDTO> _repository;
+        private readonly IBoardRepository _repository;
 
-        public DeleteBoardHandler(IRepository<BoardReadDTO, BoardCreateDTO, BoardUpdateDTO> repository)
+        public DeleteBoardHandler(IBoardRepository repository)
         {
             _repository = repository;
         }
 
         public async Task<bool> Handle(DeleteBoardCommand request, CancellationToken cancellationToken)
         { 
-            return await _repository.DeleteAsync(request.Id);
+            return await _repository.DeleteBoardAsync(request.Id);
         }
     }
 }

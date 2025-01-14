@@ -14,6 +14,6 @@ namespace TechnicalTestBackendProject.DTOs
         public string? BoardId { get; set; }
         [ForeignKey("BoardId")]
         public BoardDTO? Board { get; set; }
-        public TaskStatusEnum TaskState { get; set; }
+        public TaskStatusEnum TaskStatus { get; set; }
     }
 }

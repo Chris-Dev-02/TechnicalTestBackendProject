@@ -7,16 +7,16 @@ namespace TechnicalTestBackendProject.CQRS.Handlers
 {
     public class GetTaskByIdHandler : IRequestHandler<GetTaskByIdQuery, TaskReadDTO>
     {
-        private readonly IRepository<TaskReadDTO, TaskCreateDTO, TaskUpdateDTO> _repository;
+        private readonly ITaskRepository _repository;
 
-        public GetTaskByIdHandler(IRepository<TaskReadDTO, TaskCreateDTO, TaskUpdateDTO> repository)
+        public GetTaskByIdHandler(ITaskRepository repository)
         {
             _repository = repository;
         }
 
         public async Task<TaskReadDTO> Handle(GetTaskByIdQuery request, CancellationToken cancellationToken)
         {
-            return await _repository.GetByIdAsync(request.Id);
+            return await _repository.GetTaskByIdAsync(request.Id);
         }
     }
 }

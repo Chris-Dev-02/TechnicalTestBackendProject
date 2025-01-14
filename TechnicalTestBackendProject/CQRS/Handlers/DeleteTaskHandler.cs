@@ -7,15 +7,15 @@ namespace TechnicalTestBackendProject.CQRS.Handlers
 {
     public class DeleteTaskHandler : IRequestHandler<DeleteTaskCommand, bool>
     {
-        private readonly IRepository<TaskReadDTO, TaskCreateDTO, TaskUpdateDTO> _repository;
+        private readonly ITaskRepository _repository;
 
-        public DeleteTaskHandler(IRepository<TaskReadDTO, TaskCreateDTO, TaskUpdateDTO> repository)
+        public DeleteTaskHandler(ITaskRepository repository)
         {
             _repository = repository;
         }
         public async Task<bool> Handle(DeleteTaskCommand request, CancellationToken cancellationToken)
         {
-            return await _repository.DeleteAsync(request.Id);
+            return await _repository.DeleteTaskAsync(request.Id);
         }
     }
 }

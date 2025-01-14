@@ -7,15 +7,15 @@ namespace TechnicalTestBackendProject.CQRS.Handlers
 {
     public class CreateUserHandler : IRequestHandler<CreateUserCommand, UserReadDTO>
     {
-        private readonly IRepository<UserReadDTO, UserCreateDTO, UserUpdateDTO> _repository;
+        private readonly IUserRepository _repository;
 
-        public CreateUserHandler(IRepository<UserReadDTO, UserCreateDTO, UserUpdateDTO> repository)
+        public CreateUserHandler(IUserRepository repository)
         {
             _repository = repository;
         }
         public async Task<UserReadDTO> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
-            return await _repository.AddAsync(request.userData);
+            return await _repository.AddUserAsync(request.userData);
         }
     }
 }

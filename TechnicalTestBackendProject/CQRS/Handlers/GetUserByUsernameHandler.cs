@@ -5,18 +5,18 @@ using TechnicalTestBackendProject.Repository;
 
 namespace TechnicalTestBackendProject.CQRS.Handlers
 {
-    public class GetUserByIdHandler : IRequestHandler<GetUserByIdQuery, UserReadDTO>
+    public class GetUserByUsernameHandler : IRequestHandler<GetUserByUsernameQuery, UserDTO>
     {
         private readonly IUserRepository _repository;
 
-        public GetUserByIdHandler(IUserRepository repository)
+        public GetUserByUsernameHandler(IUserRepository repository)
         {
             _repository = repository;
         }
 
-        public async Task<UserReadDTO> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
+        public async Task<UserDTO> Handle(GetUserByUsernameQuery request, CancellationToken cancellationToken)
         {
-            return await _repository.GetUserByIdAsync(request.Id);
+            return await _repository.GetUserByUsernameAsync(request.username);
         }
     }
 }
