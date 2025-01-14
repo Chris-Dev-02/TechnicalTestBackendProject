@@ -1,6 +1,8 @@
-﻿namespace TechnicalTestBackendProject.Models
+﻿using System.Text.Json.Serialization;
+
+namespace TechnicalTestBackendProject.Models
 {
-    public enum Role
+    public enum RoleEnum
     {
         Admin = 1,
         User = 2
@@ -11,7 +13,9 @@
         public string? Username { get; set; }
         public string? Email { get; set; }
         public string? Password { get; set; }
-        public Role UserRole { get; set; }
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public RoleEnum UserRole { get; set; } = RoleEnum.User;
         public ICollection<BoardModel>? Boards { get; set; }
     }
 }

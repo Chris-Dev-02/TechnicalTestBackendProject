@@ -7,6 +7,7 @@ namespace TechnicalTestBackendProject.Services.Interfaces
     public interface IJwtTokenService
     {
         string GenerateJwtToken(UserDTO user);
+        Claim[] GenerateClaims(UserDTO user);
         ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
     }
 }

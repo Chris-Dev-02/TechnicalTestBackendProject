@@ -1,19 +1,76 @@
-﻿using TechnicalTestBackendProject.DTOs;
+﻿using AutoMapper;
+using MediatR;
+using StackExchange.Redis;
+using System.Data;
+using TechnicalTestBackendProject.CQRS.Commands;
+using TechnicalTestBackendProject.CQRS.Queries;
+using TechnicalTestBackendProject.DTOs;
 using TechnicalTestBackendProject.Models;
+using TechnicalTestBackendProject.Repository;
 using TechnicalTestBackendProject.Services.Interfaces;
 
 namespace TechnicalTestBackendProject.Services.Implementations
 {
     public class AuthenticationService : IAuthenticationService
     {
-        public Task<IEnumerable<Role>> GetAllRoles()
+        private readonly IJwtTokenService _jwtTokenService;
+        private readonly IPasswordHasherService _passwordHasherService;
+        private readonly IUserRepository _userRepository;
+        private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
+        public AuthenticationService(
+            IJwtTokenService jwtTokenService, 
+            IPasswordHasherService passwordHasherService, 
+            IUserRepository userRepository,
+            IMediator mediator,
+            IMapper mapper
+            )
         {
-            throw new NotImplementedException();
+            _jwtTokenService = jwtTokenService;
+            _passwordHasherService = passwordHasherService;
+            _userRepository = userRepository;
+            _mediator = mediator;
+            _mapper = mapper;
+        }
+        public async Task AssignRole(AssignRoleDTO assignRoleDTO)
+        {
+            var user = await _mediator.Send(new GetUserByIdQuery(assignRoleDTO.UserId));
+            if (user == null)
+            {
+                throw new KeyNotFoundException("Usur not found.");
+            }
+
+            if (!Enum.IsDefined(typeof(RoleEnum), assignRoleDTO.UserRole))
+            {
+                throw new ArgumentException("Role not valid.");
+            }
+
+            user.UserRole = assignRoleDTO.UserRole;
+
+            var userUpdated = _mapper.Map<UserUpdateDTO>(user);
+
+            await _mediator.Send(new UpdateUserCommand(userUpdated));
         }
 
-        public Task<UserReadDTO> Login(UserCreateDTO userLoginDTO)
+        public async Task<string[]> GetAllRoles()
         {
-            throw new NotImplementedException();
+            return Enum.GetNames(typeof(RoleEnum));
+        }
+
+        public async Task<string> Login(LoginDTO userLoginDTO)
+        {
+            userLoginDTO.Password = _passwordHasherService.HashPassword(userLoginDTO.Password);
+
+            var user = await _userRepository.GetUserByEmail(userLoginDTO.Email);
+
+            if (user == null || _passwordHasherService.VerifyPassword(user.Password, userLoginDTO.Password))
+            {
+                throw new UnauthorizedAccessException("Invalid credentials.");
+            }
+
+            string token = _jwtTokenService.GenerateJwtToken(user);
+
+            return token;
         }
 
         public Task<UserReadDTO> Logout()
@@ -21,9 +78,11 @@ namespace TechnicalTestBackendProject.Services.Implementations
             throw new NotImplementedException();
         }
 
-        public Task<UserReadDTO> Signup(UserCreateDTO userCreateDTO)
+        public async Task<UserReadDTO> Signup(UserCreateDTO userCreateDTO)
         {
-            throw new NotImplementedException();
+            userCreateDTO.Password = _passwordHasherService.HashPassword(userCreateDTO.Password);
+
+            return await _mediator.Send(new CreateUserCommand(userCreateDTO));
         }
     }
 }

@@ -14,6 +14,10 @@ namespace TechnicalTestBackendProject.Mappers
             CreateMap<UserDTO, UserReadDTO>()
                 .ForMember(dest => dest.Boards, opt => opt.MapFrom(src => src.Boards));
 
+            // UserModel to UserReadDTO
+            CreateMap<UserDTO, UserDTO>()
+                .ForMember(dest => dest.Boards, opt => opt.MapFrom(src => src.Boards));
+
             // TaskModel to TaskReadDTO
             CreateMap<TaskModel, TaskReadDTO>()
                 .ForMember(dest => dest.Board, opt => opt.MapFrom(src => src.Board));  // Map the Board entity directly
@@ -35,6 +39,7 @@ namespace TechnicalTestBackendProject.Mappers
 
             // UserModel to UserAuthDTO (for returning user data after login)
             CreateMap<UserModel, UserAuthDTO>();
+            CreateMap<UserModel, UserDTO>();
 
             // UserUpdateDTO to UserModel
             CreateMap<UserUpdateDTO, UserModel>()
@@ -54,6 +59,10 @@ namespace TechnicalTestBackendProject.Mappers
             // BoardUpdateDTO to BoardModel
             CreateMap<BoardUpdateDTO, BoardModel>();
 
+            #endregion
+
+            #region DTO to DTO
+            CreateMap<UserUpdateDTO, UserReadDTO>();
             #endregion
         }
     }

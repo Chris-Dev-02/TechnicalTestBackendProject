@@ -59,6 +59,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuer = false,
             ValidateAudience = false,
             ValidateLifetime = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]))
         };
     });
@@ -74,6 +76,7 @@ builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 // <---- Custom repositories configuration ---->
 builder.Services.AddScoped<IRepository<UserReadDTO, UserCreateDTO, UserUpdateDTO>, UserRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRepository<BoardReadDTO, BoardCreateDTO, BoardUpdateDTO>, BoardRepository>();
 builder.Services.AddScoped<IRepository<TaskReadDTO, TaskCreateDTO, TaskUpdateDTO>, TaskRepository>();
 
@@ -84,6 +87,9 @@ builder.Services.AddScoped<IValidator<BoardCreateDTO>, CreateBoardValidator>();
 builder.Services.AddScoped<IValidator<BoardUpdateDTO>, UpdateBoardValidator>();
 builder.Services.AddScoped<IValidator<TaskCreateDTO>, CreateTaskValidator>();
 builder.Services.AddScoped<IValidator<TaskUpdateDTO>, UpdateTaskValidator>();
+
+// <---- Service that sync databases ---->
+//builder.Services.AddHostedService<CacheSyncService>();
 
 
 builder.Services.AddControllers();
@@ -109,5 +115,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+//await app.RunAsync();
 
 app.Run();

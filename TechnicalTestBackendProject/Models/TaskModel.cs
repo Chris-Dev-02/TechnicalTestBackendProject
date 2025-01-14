@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TechnicalTestBackendProject.Models
 {
-    public enum TaskState
+    public enum TaskStatusEnum
     {
         ToDo = 1,
         InProgress = 2,
@@ -19,6 +19,6 @@ namespace TechnicalTestBackendProject.Models
         public string? BoardId { get; set; }
         [ForeignKey("BoardId")]
         public BoardModel? Board { get; set; }
-        public TaskState TaskState { get; set; }
+        public TaskStatusEnum TaskState { get; set; }
     }
 }

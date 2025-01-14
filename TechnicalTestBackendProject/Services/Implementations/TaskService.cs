@@ -4,7 +4,7 @@ using TechnicalTestBackendProject.Services.Interfaces;
 
 namespace TechnicalTestBackendProject.Services.Implementations
 {
-    public class TaskService : ICRUDActionsService<TaskReadDTO, TaskCreateDTO, TaskUpdateDTO>
+    public class TaskService : ICRUDActionsService<TaskReadDTO, TaskCreateDTO, TaskUpdateDTO>, ITaskSpecificActions
     {
         public Task<IEnumerable<TaskReadDTO>> Get()
         {
@@ -24,6 +24,16 @@ namespace TechnicalTestBackendProject.Services.Implementations
             throw new NotImplementedException();
         }
         public Task<TaskReadDTO> Delete(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<TaskReadDTO>> GetAllTaskByUserAndBoard(int userId, int boardId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<string>> GetAllTasksStatus()
         {
             throw new NotImplementedException();
         }

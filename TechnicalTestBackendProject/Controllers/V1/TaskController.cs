@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TechnicalTestBackendProject.DTOs;
@@ -18,12 +19,23 @@ namespace TechnicalTestBackendProject.Controllers.V1
         }
 
         [HttpGet]
+        [Authorize]
+        [Authorize(Roles = "Admin")]
+        [Route("list")]
         public IActionResult GetAllTasks()
         {
             return Ok();
         }
 
         [HttpGet]
+        [Authorize]
+        public IActionResult GetAllTasksByBoardId()
+        {
+            return Ok();
+        }
+
+        [HttpGet]
+        [Authorize]
         [Route("{id}")]
         public IActionResult GetTaskById(int id)
         {
@@ -31,6 +43,7 @@ namespace TechnicalTestBackendProject.Controllers.V1
         }
 
         [HttpPost]
+        [Authorize]
         public IActionResult CreateTask([FromBody] TaskCreateDTO TaskData)
         {
             var validationResult = _createTaskValidator.Validate(TaskData);
@@ -44,6 +57,7 @@ namespace TechnicalTestBackendProject.Controllers.V1
         }
 
         [HttpPut]
+        [Authorize]
         public IActionResult UpdateTask([FromBody] TaskUpdateDTO TaskData)
         {
             var validationResult = _updateTaskValidator.Validate(TaskData);
@@ -56,6 +70,7 @@ namespace TechnicalTestBackendProject.Controllers.V1
         }
 
         [HttpDelete]
+        [Authorize]
         [Route("{id}")]
         public IActionResult DeleteTask(int id)
         {

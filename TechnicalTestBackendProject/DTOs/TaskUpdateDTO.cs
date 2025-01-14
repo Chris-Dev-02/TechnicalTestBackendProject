@@ -7,6 +7,6 @@ namespace TechnicalTestBackendProject.DTOs
         public int Id { get; set; }
         public string? Title { get; set; }
         public string? Description { get; set; }
-        public TaskState TaskState { get; set; }
+        public TaskStatusEnum TaskState { get; set; }
     }
 }

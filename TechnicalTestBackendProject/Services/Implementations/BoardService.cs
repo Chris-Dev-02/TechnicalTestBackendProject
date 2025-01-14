@@ -4,7 +4,7 @@ using TechnicalTestBackendProject.Services.Interfaces;
 
 namespace TechnicalTestBackendProject.Services.Implementations
 {
-    public class BoardService : ICRUDActionsService<BoardReadDTO, BoardCreateDTO, BoardUpdateDTO>
+    public class BoardService : ICRUDActionsService<BoardReadDTO, BoardCreateDTO, BoardUpdateDTO>, IBoardSpecificActions
     {
         public Task<IEnumerable<BoardReadDTO>> Get()
         {
@@ -29,6 +29,14 @@ namespace TechnicalTestBackendProject.Services.Implementations
             throw new NotImplementedException();
         }
 
+        public Task GetAllBoardsByUser(int userId)
+        {
+            throw new NotImplementedException();
+        }
 
+        public Task GetStatistics()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

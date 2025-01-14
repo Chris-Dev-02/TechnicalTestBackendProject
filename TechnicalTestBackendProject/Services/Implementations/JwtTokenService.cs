@@ -32,11 +32,29 @@ namespace TechnicalTestBackendProject.Services.Implementations
             var token = new JwtSecurityToken(
                 issuer: _issuer,
                 audience: _audience,
-                claims: claims,
+                claims: GenerateClaims(user),
                 expires: DateTime.Now.AddHours(1),
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public Claim[] GenerateClaims(UserDTO user)
+        {
+            if(user.UserRole == RoleEnum.Admin)
+            {
+                return new[]
+                {
+                    new Claim(ClaimTypes.Name, user.Username),
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.Role, "Admin"),
+                };
+            }
+            return new[]
+            {
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Email, user.Email),
+            };
         }
 
         public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)

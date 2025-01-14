@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TechnicalTestBackendProject.DTOs;
@@ -18,12 +19,30 @@ namespace TechnicalTestBackendProject.Controllers.V1
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
+        [Route("list")]
         public IActionResult GetAllBoards()
         {
             return Ok();
         }
 
         [HttpGet]
+        [Authorize]
+        public IActionResult GetAllBoardsByUserId()
+        {
+            return Ok();
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("statistics")]
+        public IActionResult GetBoardsStatistics()
+        {
+            return Ok();
+        }
+
+        [HttpGet]
+        [Authorize]
         [Route("{id}")]
         public IActionResult GetBoardById(int id)
         {
@@ -31,6 +50,7 @@ namespace TechnicalTestBackendProject.Controllers.V1
         }
 
         [HttpPost]
+        [Authorize]
         public IActionResult CreateBoard([FromBody] BoardCreateDTO BoardData)
         {
             var validationResult = _createBoardValidator.Validate(BoardData);
@@ -43,6 +63,7 @@ namespace TechnicalTestBackendProject.Controllers.V1
         }
 
         [HttpPut]
+        [Authorize]
         public IActionResult UpdateBoard([FromBody] BoardUpdateDTO BoardData)
         {
             var validationResult = _updateBoardValidator.Validate(BoardData);
@@ -55,6 +76,7 @@ namespace TechnicalTestBackendProject.Controllers.V1
         }
 
         [HttpDelete]
+        [Authorize]
         [Route("{id}")]
         public IActionResult DeleteBoard(int id)
         {

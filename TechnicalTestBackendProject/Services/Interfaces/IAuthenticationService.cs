@@ -5,10 +5,10 @@ namespace TechnicalTestBackendProject.Services.Interfaces
 {
     public interface IAuthenticationService
     {
-        Task<IEnumerable<Role>> GetAllRoles();
+        Task<string[]> GetAllRoles();
         Task<UserReadDTO> Signup(UserCreateDTO userCreateDTO);
-
-        Task<UserReadDTO> Login(UserCreateDTO userLoginDTO);
+        Task<string> Login(LoginDTO userLoginDTO);
+        Task AssignRole(AssignRoleDTO assignRoleDTO);
         Task<UserReadDTO> Logout();
 
     }

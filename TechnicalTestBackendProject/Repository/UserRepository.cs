@@ -8,7 +8,7 @@ using TechnicalTestBackendProject.Models;
 
 namespace TechnicalTestBackendProject.Repository
 {
-    public class UserRepository : IRepository<UserReadDTO, UserCreateDTO, UserUpdateDTO>
+    public class UserRepository : IRepository<UserReadDTO, UserCreateDTO, UserUpdateDTO>, IUserRepository
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IConnectionMultiplexer _redis;
@@ -112,6 +112,20 @@ namespace TechnicalTestBackendProject.Repository
             _cache.KeyDelete($"User:{id}");
 
             return true;
+        }
+
+        public async Task<UserDTO> GetUserByUsername(string username)
+        {
+            var user = await _dbContext.Users.FirstOrDefaultAsync(user => user.Username == username);
+
+            return _mapper.Map<UserDTO>(user);
+        }
+
+        public async Task<UserDTO> GetUserByEmail(string email)
+        {
+            var user = await _dbContext.Users.FirstOrDefaultAsync(user => user.Email == email);
+
+            return _mapper.Map<UserDTO>(user);
         }
     }
 }

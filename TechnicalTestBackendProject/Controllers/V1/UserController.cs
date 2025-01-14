@@ -1,8 +1,10 @@
 ﻿using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TechnicalTestBackendProject.DTOs;
+using TechnicalTestBackendProject.Services.Interfaces;
 using TechnicalTestBackendProject.Validators;
 
 namespace TechnicalTestBackendProject.Controllers.V1
@@ -13,15 +15,19 @@ namespace TechnicalTestBackendProject.Controllers.V1
     {
         private readonly IValidator<UserCreateDTO> _createUserValidator;
         private readonly IValidator<LoginDTO> _loginValidator;
-        public UserController(IValidator<UserCreateDTO> createUserValidator, IValidator<LoginDTO> loginValidator) 
+        private readonly IAuthenticationService _authenticationService;
+        public UserController(IValidator<UserCreateDTO> createUserValidator, 
+            IValidator<LoginDTO> loginValidator,
+            IAuthenticationService authenticationService) 
         {
             _createUserValidator = createUserValidator;
             _loginValidator = loginValidator;
+            _authenticationService = authenticationService;
         }
 
         [HttpPost]
         [Route("signup")]
-        public IActionResult SignUp([FromBody] UserCreateDTO SignupData)
+        public async Task<IActionResult> SignUp([FromBody] UserCreateDTO SignupData)
         {
             var validationResult = _createUserValidator.Validate(SignupData);
 
@@ -30,12 +36,20 @@ namespace TechnicalTestBackendProject.Controllers.V1
                 return BadRequest(validationResult.Errors);
             }
 
-            return Ok();
+            try
+            {
+                await _authenticationService.Signup(SignupData);
+                return Ok("User registered successfully.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost]
         [Route("login")]
-        public IActionResult Login([FromBody] LoginDTO LoginData)
+        public async Task<IActionResult> Login([FromBody] LoginDTO LoginData)
         {
             var validationResult = _loginValidator.Validate(LoginData);
 
@@ -44,10 +58,39 @@ namespace TechnicalTestBackendProject.Controllers.V1
                 return BadRequest(validationResult.Errors);
             }
 
-            return Ok();
+            try
+            {
+                var token = await _authenticationService.Login(LoginData);
+                return Ok(new { Token = token });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized("Invalid credentials.");
+            }
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [Route("assign-role")]
+        public async Task<IActionResult> AssignRole([FromBody] AssignRoleDTO assignRoleDTO)
+        {
+            try
+            {
+                await _authenticationService.AssignRole(assignRoleDTO);
+                return Ok($"Role: '{assignRoleDTO.UserRole}' asigned to user with ID: {assignRoleDTO.UserId}.");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Authorize]
         [Route("logout")]
         public IActionResult Logout()
         {

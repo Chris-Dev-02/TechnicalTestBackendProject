@@ -9,7 +9,7 @@ namespace TechnicalTestBackendProject.DTOs
         public string? Description { get; set; }
         public DateTime CreationDate { get; set; }
         public string? BoardId { get; set; }
-        public TaskState TaskState { get; set; }
+        public TaskStatusEnum TaskState { get; set; }
         public BoardDTO? Board { get; set; }
     }
 }
