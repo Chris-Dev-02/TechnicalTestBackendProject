@@ -161,7 +161,7 @@ namespace TechnicalTestBackendProject.Repository
                     {
                         BoardId = g.Key.BoardId,
                         BoardName = g.Key.Name,
-                        Statistics = g.GroupBy(t => t.TaskStatus.ToString())
+                        Statistics = g.GroupBy(t => t.TaskStatus)
                                       .Select(s => new TaskStatisticsDTO
                                       {
                                           Status = s.Key,

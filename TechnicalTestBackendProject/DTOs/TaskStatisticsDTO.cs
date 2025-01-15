@@ -1,8 +1,10 @@
-﻿namespace TechnicalTestBackendProject.DTOs
+﻿using TechnicalTestBackendProject.Models;
+
+namespace TechnicalTestBackendProject.DTOs
 {
     public class TaskStatisticsDTO
     {
-        public string Status { get; set; } = string.Empty;
+        public TaskStatusEnum Status { get; set; } = TaskStatusEnum.ToDo;
         public int Count { get; set; }
     }
 }
