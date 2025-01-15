@@ -86,7 +86,7 @@ namespace TechnicalTestBackendProject.Controllers.V1
         {
             var validationResult = _updateTaskValidator.Validate(TaskData);
 
-            if(validationResult.IsValid) {
+            if(!validationResult.IsValid) {
                 return BadRequest(validationResult.Errors);
             }
 

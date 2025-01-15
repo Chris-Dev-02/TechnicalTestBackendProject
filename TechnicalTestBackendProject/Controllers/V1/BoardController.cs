@@ -78,7 +78,7 @@ namespace TechnicalTestBackendProject.Controllers.V1
         {
             var validationResult = _createBoardValidator.Validate(BoardData);
 
-            if(validationResult.IsValid) {
+            if(!validationResult.IsValid) {
                 return BadRequest(validationResult.Errors);
             }
 
@@ -97,7 +97,7 @@ namespace TechnicalTestBackendProject.Controllers.V1
         {
             var validationResult = _updateBoardValidator.Validate(BoardData);
 
-            if(validationResult.IsValid) {
+            if(!validationResult.IsValid) {
                 return BadRequest(validationResult.Errors);
             }
 
