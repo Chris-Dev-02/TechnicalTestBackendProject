@@ -1,4 +1,5 @@
-﻿using TechnicalTestBackendProject.Models;
+﻿using System.Text.Json.Serialization;
+using TechnicalTestBackendProject.Models;
 
 namespace TechnicalTestBackendProject.DTOs
 {
@@ -8,6 +9,7 @@ namespace TechnicalTestBackendProject.DTOs
         public string? Username { get; set; }
         public string? Email { get; set; }
         public string? Password { get; set; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public RoleEnum UserRole { get; set; }
     }
 }

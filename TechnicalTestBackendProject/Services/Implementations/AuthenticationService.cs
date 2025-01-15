@@ -59,7 +59,7 @@ namespace TechnicalTestBackendProject.Services.Implementations
             return await _mediator.Send(new IsValidTokenQuery(token));
         }
 
-        public async Task<string> Login(LoginDTO userLoginDTO)
+        public async Task<LoginResponseDTO> Login(LoginDTO userLoginDTO)
         {
             //userLoginDTO.Password = _passwordHasherService.HashPassword(userLoginDTO.Password);
             userLoginDTO.Password = userLoginDTO.Password.Trim();
@@ -70,9 +70,13 @@ namespace TechnicalTestBackendProject.Services.Implementations
                 throw new UnauthorizedAccessException("Invalid credentials.");
             }
 
+            var userRead = await _mediator.Send(new GetUserByIdQuery(user.Id));
             string token = _jwtTokenService.GenerateJwtToken(user);
 
-            return token;
+            return new LoginResponseDTO {
+                User = userRead,
+                Token = token
+            };
         }
 
         public async Task<bool> Logout(string token)

@@ -59,8 +59,8 @@ namespace TechnicalTestBackendProject.Controllers.V1
 
             try
             {
-                var token = await _authenticationService.Login(LoginData);
-                return Ok(new { Token = token });
+                var LoginResponse = await _authenticationService.Login(LoginData);
+                return Ok(LoginResponse);
             }
             catch (UnauthorizedAccessException)
             {

@@ -7,7 +7,7 @@ namespace TechnicalTestBackendProject.Services.Interfaces
     {
         Task<string[]> GetAllRoles();
         Task<UserReadDTO> Signup(UserCreateDTO userCreateDTO);
-        Task<string> Login(LoginDTO userLoginDTO);
+        Task<LoginResponseDTO> Login(LoginDTO userLoginDTO);
         Task AssignRole(AssignRoleDTO assignRoleDTO);
         Task<bool> Logout(string token);
         Task<bool> IsValidToken(string token);
