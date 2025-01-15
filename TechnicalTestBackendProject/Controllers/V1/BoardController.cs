@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using TechnicalTestBackendProject.DTOs;
@@ -8,7 +7,7 @@ using TechnicalTestBackendProject.Services.Interfaces;
 
 namespace TechnicalTestBackendProject.Controllers.V1
 {
-    [Route("api/V1/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class BoardController : ControllerBase
     {
@@ -28,18 +27,18 @@ namespace TechnicalTestBackendProject.Controllers.V1
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public IActionResult GetAllBoards()
+        public async Task<IActionResult> GetAllBoards()
         {
-            var boards = _boardService.GetAllBoardsAsync();
+            var boards = await _boardService.GetAllBoardsAsync();
             return Ok(boards);
         }
 
         [HttpGet]
         [Authorize]
-        [Route("user/{id}")]
+        [Route("user/{userId}")]
         public async Task<IActionResult> GetBoardsByUserId(int userId)
         {
-            var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (currentUserId == null || int.Parse(currentUserId) != userId) return Unauthorized();
 
             //var boards = _boardService.GetAllBoardsByUserAsync(userId);
@@ -49,21 +48,25 @@ namespace TechnicalTestBackendProject.Controllers.V1
 
         [HttpGet]
         [Authorize]
-        [Route("statistics")]
-        public IActionResult GetBoardsStatistics()
+        [Route("statistics/{userId}")]
+        public async Task<IActionResult> GetBoardsStatistics(int userId)
         {
-            return Ok();
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (currentUserId == null || int.Parse(currentUserId) != userId) return Unauthorized();
+
+            var statistics = await _boardService.GetStatisticsAsync(userId);
+            return Ok(statistics);
         }
 
         [HttpGet]
         [Authorize]
         [Route("{id}")]
-        public IActionResult GetBoardById(int id)
+        public async Task<IActionResult> GetBoardById(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null) Unauthorized();
 
-            var board = _boardService.GetBoardByIdAsync(id, int.Parse(userId));
+            var board = await _boardService.GetBoardByIdAsync(id, int.Parse(userId));
             if (board == null) NotFound();
 
             return Ok(board);
@@ -81,7 +84,7 @@ namespace TechnicalTestBackendProject.Controllers.V1
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null) Unauthorized();
-            BoardData.CreatedById = userId;
+            BoardData.CreatedById = int.Parse(userId);
 
             var board = await _boardService.CreateBoardAsync(BoardData);
 
@@ -90,7 +93,7 @@ namespace TechnicalTestBackendProject.Controllers.V1
 
         [HttpPut]
         [Authorize]
-        public IActionResult UpdateBoard([FromBody] BoardUpdateDTO BoardData)
+        public async Task<IActionResult> UpdateBoard([FromBody] BoardUpdateDTO BoardData)
         {
             var validationResult = _updateBoardValidator.Validate(BoardData);
 
@@ -101,7 +104,7 @@ namespace TechnicalTestBackendProject.Controllers.V1
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null) Unauthorized();
 
-            var board = _boardService.UpdateBoardAsync(BoardData, int.Parse(userId));
+            var board = await _boardService.UpdateBoardAsync(BoardData, int.Parse(userId));
             if (board == null) NotFound();
 
             return Ok(board);

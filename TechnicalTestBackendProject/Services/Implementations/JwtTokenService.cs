@@ -28,7 +28,7 @@ namespace TechnicalTestBackendProject.Services.Implementations
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
             var token = new JwtSecurityToken(
                 issuer: _issuer,
                 audience: _audience,

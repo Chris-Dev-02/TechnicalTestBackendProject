@@ -119,9 +119,9 @@ namespace TechnicalTestBackendProject.Repository
             return true;
         }
 
-        public async Task<IEnumerable<TaskReadDTO>> GetTasksByBoardIdAndUserIdAsync(int boarId)
+        public async Task<IEnumerable<TaskReadDTO>> GetTasksByBoardIdAsync(int boarId)
         {
-            var tasks = await _dbContext.Tasks.Where(t => t.BoardId == boarId.ToString() ).ToListAsync();
+            var tasks = await _dbContext.Tasks.Where(t => t.BoardId == boarId).ToListAsync();
 
             return tasks.Select(task => _mapper.Map<TaskReadDTO>(task));
         }

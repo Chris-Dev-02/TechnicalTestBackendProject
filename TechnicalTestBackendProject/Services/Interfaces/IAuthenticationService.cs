@@ -9,7 +9,8 @@ namespace TechnicalTestBackendProject.Services.Interfaces
         Task<UserReadDTO> Signup(UserCreateDTO userCreateDTO);
         Task<string> Login(LoginDTO userLoginDTO);
         Task AssignRole(AssignRoleDTO assignRoleDTO);
-        Task<UserReadDTO> Logout();
+        Task<bool> Logout(string token);
+        Task<bool> IsValidToken(string token);
 
         //Task<IEnumerable<UserReadDTO>> GetAllUsersAsync();
         //Task<UserReadDTO> GetUserByIdAsync(int id, int userId);

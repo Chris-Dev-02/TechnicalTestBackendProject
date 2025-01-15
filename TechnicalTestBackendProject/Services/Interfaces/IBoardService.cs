@@ -10,7 +10,7 @@ namespace TechnicalTestBackendProject.Services.Interfaces
         Task<BoardReadDTO> CreateBoardAsync(BoardCreateDTO entity);
         Task<BoardReadDTO> UpdateBoardAsync(BoardUpdateDTO entity, int userId);
         Task<bool> DeleteBoardAsync(int id, int userId);
-        Task<IEnumerator<BoardReadDTO>> GetAllBoardsByUserAsync(int userId);
-        Task GetStatisticsAsync();
+        Task<IEnumerable<BoardReadDTO>> GetAllBoardsByUserAsync(int userId);
+        Task<IEnumerable<BoardStatisticsDTO>> GetStatisticsAsync(int userId);
     }
 }

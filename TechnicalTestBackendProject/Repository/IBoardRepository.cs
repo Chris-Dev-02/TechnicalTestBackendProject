@@ -11,5 +11,6 @@ namespace TechnicalTestBackendProject.Repository
         Task<BoardReadDTO> AddBoardAsync(BoardCreateDTO entity);
         Task<BoardReadDTO> UpdateBoardAsync(BoardUpdateDTO entity);
         Task<bool> DeleteBoardAsync(int id);
+        Task<IEnumerable<BoardStatisticsDTO>> GetStatisticsAsync(int userId);
     }
 }

@@ -1,15 +1,12 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TechnicalTestBackendProject.DTOs;
 using TechnicalTestBackendProject.Services.Interfaces;
-using TechnicalTestBackendProject.Validators;
 
 namespace TechnicalTestBackendProject.Controllers.V1
 {
-    [Route("api/V1/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -25,6 +22,7 @@ namespace TechnicalTestBackendProject.Controllers.V1
             _authenticationService = authenticationService;
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [Route("signup")]
         public async Task<IActionResult> SignUp([FromBody] UserCreateDTO SignupData)
@@ -47,6 +45,7 @@ namespace TechnicalTestBackendProject.Controllers.V1
             }
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO LoginData)
@@ -92,9 +91,33 @@ namespace TechnicalTestBackendProject.Controllers.V1
         [HttpPost]
         [Authorize]
         [Route("logout")]
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
-            return Ok();
+            var token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+            var result = await _authenticationService.Logout(token);
+            if (result)
+            {
+                return Ok("Token invalidated successfully");
+            }
+            else
+            {
+                return BadRequest("Invalid token.");
+            }
+        }
+
+        [Authorize]
+        [HttpGet("protected-resource")]
+        public IActionResult GetProtectedResource()
+        {
+            var token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            if (string.IsNullOrEmpty(token))
+            {
+                return Unauthorized("Token not provided.");
+            }
+
+            // Puedes procesar el token aquí.
+            return Ok("Allowed access.");
         }
     }
 }

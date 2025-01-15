@@ -1,4 +1,7 @@
-﻿using TechnicalTestBackendProject.DTOs;
+﻿using MediatR;
+using TechnicalTestBackendProject.CQRS.Commands;
+using TechnicalTestBackendProject.CQRS.Queries;
+using TechnicalTestBackendProject.DTOs;
 using TechnicalTestBackendProject.Models;
 using TechnicalTestBackendProject.Services.Interfaces;
 
@@ -6,39 +9,60 @@ namespace TechnicalTestBackendProject.Services.Implementations
 {
     public class TaskService : ITaskService
     {
-        public Task<TaskReadDTO> Create(TaskCreateDTO entity)
+        private readonly IMediator _mediator;
+        public TaskService(IMediator mediator)
         {
-            throw new NotImplementedException();
+            _mediator = mediator;
+        }
+        public async Task<TaskReadDTO> CreateTaskAsync(TaskCreateDTO entity)
+        {
+            var task = await _mediator.Send(new CreateTaskCommand(entity));
+            return task;
         }
 
-        public Task<bool> Delete(int id, int userId)
+        public async Task<bool> DeleteTaskAsync(int id, int userId)
         {
-            throw new NotImplementedException();
+            var task = await _mediator.Send(new GetTaskByIdQuery(id));
+            if (task == null || task.CreatedById != userId) return false;
+
+            var result = await _mediator.Send(new DeleteTaskCommand(id));
+            return result;
         }
 
-        public Task<IEnumerable<TaskReadDTO>> Get()
+        public async Task<IEnumerable<TaskReadDTO>> GetAllTasksAsync()
         {
-            throw new NotImplementedException();
+            return await _mediator.Send(new GetAllTasksQuery());
         }
 
-        public Task<IEnumerable<TaskReadDTO>> GetAllTaskByUserAndBoard(int userId, int boardId)
+        public async Task<IEnumerable<string>> GetAllTasksStatus()
         {
-            throw new NotImplementedException();
+            return Enum.GetNames(typeof(TaskStatusEnum));
         }
 
-        public Task<IEnumerable<string>> GetAllTasksStatus()
+        public async Task<IEnumerable<TaskReadDTO>> GetTasksByBoardId(int userId, int boardId)
         {
-            throw new NotImplementedException();
+            var board = await _mediator.Send(new GetBoardByIdQuery(userId));
+            if (board == null || board.CreatedById != userId) return null;
+
+            return await _mediator.Send(new GetTasksByBoardIdQuery(userId));
         }
 
-        public Task<TaskReadDTO> GetById(int id, int userId)
+        public async Task<TaskReadDTO> GetTaskByIdAsync(int id, int userId)
         {
-            throw new NotImplementedException();
+            var task = await _mediator.Send(new GetTaskByIdQuery(id));
+            if (task == null || task.CreatedById != userId) return null;
+
+            return task;
         }
 
-        public Task<TaskReadDTO> Update(TaskUpdateDTO entity, int userId)
+        public async Task<TaskReadDTO> UpdateTaskAsync(TaskUpdateDTO entity, int userId)
         {
-            throw new NotImplementedException();
+            var task = await _mediator.Send(new GetTaskByIdQuery(entity.Id));
+            if (task == null || task.CreatedById != userId) return null;
+
+            var taskUpdated = await _mediator.Send(new UpdateTaskCommand(entity));
+
+            return taskUpdated;
         }
     }
 }

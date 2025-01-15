@@ -1,50 +1,68 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using TechnicalTestBackendProject.DTOs;
+using TechnicalTestBackendProject.Services.Interfaces;
 
 namespace TechnicalTestBackendProject.Controllers.V1
 {
-    [Route("api/V1/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class TaskController : ControllerBase
     {
         private readonly IValidator<TaskCreateDTO> _createTaskValidator;
         private readonly IValidator<TaskUpdateDTO> _updateTaskValidator;
-        public TaskController(IValidator<TaskCreateDTO> createTaskValidator, IValidator<TaskUpdateDTO> updateTaskValidator) 
+        private readonly ITaskService _taskService;
+        public TaskController(
+            IValidator<TaskCreateDTO> createTaskValidator, 
+            IValidator<TaskUpdateDTO> updateTaskValidator,
+            ITaskService taskService) 
         {
             _createTaskValidator = createTaskValidator;
             _updateTaskValidator = updateTaskValidator;
+            _taskService = taskService;
         }
 
         [HttpGet]
         [Authorize]
         [Authorize(Roles = "Admin")]
-        [Route("list")]
-        public IActionResult GetAllTasks()
+        public async Task<IActionResult> GetAllTasks()
         {
-            return Ok();
+            var tasks = await _taskService.GetAllTasksAsync();
+            return Ok(tasks);
         }
 
         [HttpGet]
         [Authorize]
-        public IActionResult GetAllTasksByBoardId()
+        [Route("{id}/board/{boarId}")]
+        public async Task<IActionResult> GetAllTasksByBoardId(int id, int boardId)
         {
-            return Ok();
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //if (currentUserId == null || int.Parse(currentUserId) != userId) return Unauthorized();
+            if(currentUserId != null) return Unauthorized();
+
+            var tasks = await _taskService.GetTasksByBoardId(id, boardId);
+            return Ok(tasks);
         }
 
         [HttpGet]
         [Authorize]
         [Route("{id}")]
-        public IActionResult GetTaskById(int id)
+        public async Task<IActionResult> GetTaskById(int id)
         {
-            return Ok();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) Unauthorized();
+
+            var task = await _taskService.GetTaskByIdAsync(id, int.Parse(userId));
+            if (task == null) NotFound();
+
+            return Ok(task);
         }
 
         [HttpPost]
         [Authorize]
-        public IActionResult CreateTask([FromBody] TaskCreateDTO TaskData)
+        public async Task<IActionResult> CreateTask([FromBody] TaskCreateDTO TaskData)
         {
             var validationResult = _createTaskValidator.Validate(TaskData);
 
@@ -53,12 +71,18 @@ namespace TechnicalTestBackendProject.Controllers.V1
                 return BadRequest(validationResult.Errors);
             }
 
-            return Ok();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) Unauthorized();
+            //TaskData.CreatedById = userId;
+
+            var task = await _taskService.CreateTaskAsync(TaskData);
+
+            return Ok(task);
         }
 
         [HttpPut]
         [Authorize]
-        public IActionResult UpdateTask([FromBody] TaskUpdateDTO TaskData)
+        public async Task<IActionResult> UpdateTask([FromBody] TaskUpdateDTO TaskData)
         {
             var validationResult = _updateTaskValidator.Validate(TaskData);
 
@@ -66,15 +90,27 @@ namespace TechnicalTestBackendProject.Controllers.V1
                 return BadRequest(validationResult.Errors);
             }
 
-            return Ok();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) Unauthorized();
+
+            var task = await _taskService.UpdateTaskAsync(TaskData, int.Parse(userId));
+            if (task == null) NotFound();
+
+            return Ok(task);
         }
 
         [HttpDelete]
         [Authorize]
         [Route("{id}")]
-        public IActionResult DeleteTask(int id)
+        public async Task<IActionResult> DeleteTask(int id)
         {
-            return Ok();
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null) return Unauthorized();
+
+            var result = await _taskService.DeleteTaskAsync(id, int.Parse(userId));
+            if (!result) return NotFound();
+
+            return NoContent();
         }
     }
 }

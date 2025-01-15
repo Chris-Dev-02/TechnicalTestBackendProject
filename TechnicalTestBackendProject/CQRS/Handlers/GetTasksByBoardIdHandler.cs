@@ -16,7 +16,7 @@ namespace TechnicalTestBackendProject.CQRS.Handlers
 
         public async Task<IEnumerable<TaskReadDTO>> Handle(GetTasksByBoardIdQuery request, CancellationToken cancellationToken)
         {
-            return await _repository.GetTasksByBoardIdAndUserIdAsync(request.boardId);
+            return await _repository.GetTasksByBoardIdAsync(request.boardId);
         }
     }
 }

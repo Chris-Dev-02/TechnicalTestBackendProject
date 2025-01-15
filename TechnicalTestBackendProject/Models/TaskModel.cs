@@ -16,9 +16,12 @@ namespace TechnicalTestBackendProject.Models
         public string? Description { get; set; }
         public DateTime CreationDate { get; set; }
         [Required]
-        public string? BoardId { get; set; }
+        public int BoardId { get; set; }
         [ForeignKey("BoardId")]
         public BoardModel? Board { get; set; }
+        public int CreatedById { get; set; }
+        [ForeignKey("CreatedById")]
+        public UserModel? CreatedBy { get; set; }
         public TaskStatusEnum TaskStatus { get; set; }
     }
 }

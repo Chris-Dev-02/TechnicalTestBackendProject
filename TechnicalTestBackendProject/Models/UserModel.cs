@@ -17,5 +17,6 @@ namespace TechnicalTestBackendProject.Models
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public RoleEnum UserRole { get; set; } = RoleEnum.User;
         public ICollection<BoardModel>? Boards { get; set; }
+        public ICollection<TaskModel>? Tasks { get; set; }
     }
 }

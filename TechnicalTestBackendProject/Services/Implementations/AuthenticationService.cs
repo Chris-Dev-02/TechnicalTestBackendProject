@@ -54,13 +54,18 @@ namespace TechnicalTestBackendProject.Services.Implementations
             return Enum.GetNames(typeof(RoleEnum));
         }
 
+        public async Task<bool> IsValidToken(string token)
+        {
+            return await _mediator.Send(new IsValidTokenQuery(token));
+        }
+
         public async Task<string> Login(LoginDTO userLoginDTO)
         {
-            userLoginDTO.Password = _passwordHasherService.HashPassword(userLoginDTO.Password);
-
+            //userLoginDTO.Password = _passwordHasherService.HashPassword(userLoginDTO.Password);
+            userLoginDTO.Password = userLoginDTO.Password.Trim();
             var user = await _mediator.Send(new GetUserByEmailQuery((userLoginDTO.Email)));
 
-            if (user == null || _passwordHasherService.VerifyPassword(user.Password, userLoginDTO.Password))
+            if (user == null || !_passwordHasherService.VerifyPassword(userLoginDTO.Password, user.Password))
             {
                 throw new UnauthorizedAccessException("Invalid credentials.");
             }
@@ -70,13 +75,14 @@ namespace TechnicalTestBackendProject.Services.Implementations
             return token;
         }
 
-        public Task<UserReadDTO> Logout()
+        public async Task<bool> Logout(string token)
         {
-            throw new NotImplementedException();
+            return await _mediator.Send(new InvalidateTokenCommand(token));
         }
 
         public async Task<UserReadDTO> Signup(UserCreateDTO userCreateDTO)
         {
+            userCreateDTO.Password = userCreateDTO.Password.Trim();
             userCreateDTO.Password = _passwordHasherService.HashPassword(userCreateDTO.Password);
 
             return await _mediator.Send(new CreateUserCommand(userCreateDTO));

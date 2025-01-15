@@ -124,10 +124,54 @@ namespace TechnicalTestBackendProject.Repository
         public async Task<IEnumerable<BoardReadDTO>> GetBoardsByUserIdAsync(int userId)
         {
             var boards = await _dbContext.Boards
-                .Where(board => board.CreatedById == userId.ToString())
+                .Where(board => board.CreatedById == userId)
                 .ToListAsync();
 
             return boards.Select(board => _mapper.Map<BoardReadDTO>(board));
+        }
+
+        public async Task<IEnumerable<BoardStatisticsDTO>> GetStatisticsAsync(int userId)
+        {
+            //return await _dbContext.Tasks
+            //    .Where(t => t.Board.CreatedById == userId.ToString())
+            //    .GroupBy(t => t.TaskStatus)
+            //    .Select(g => new TaskStatisticsDTO
+            //    {
+            //        Status = g.Key.ToString(),
+            //        Count = g.Count()
+            //    })
+            //    .ToListAsync();
+
+            //return await _dbContext.Tasks
+            //        .Where(t => t.Board.CreatedById == userId.ToString())
+            //        .GroupBy(t => new { t.BoardId, t.Board.Name, t.TaskStatus })
+            //        .Select(g => new TaskStatisticsDTO
+            //        {
+            //            BoardId = int.Parse(g.Key.BoardId),
+            //            BoardName = g.Key.Name,
+            //            Status = g.Key.TaskStatus.ToString(),
+            //            Count = g.Count()
+            //        })
+            //        .ToListAsync();
+
+            var groupedStatistics = await _dbContext.Tasks
+                    .Where(t => t.Board.CreatedById == userId)
+                    .GroupBy(t => new { t.BoardId, t.Board.Name })
+                    .Select(g => new BoardStatisticsDTO
+                    {
+                        BoardId = g.Key.BoardId,
+                        BoardName = g.Key.Name,
+                        Statistics = g.GroupBy(t => t.TaskStatus.ToString())
+                                      .Select(s => new TaskStatisticsDTO
+                                      {
+                                          Status = s.Key,
+                                          Count = s.Count()
+                                      })
+                                      .ToList()
+                    })
+                    .ToListAsync();
+
+            return groupedStatistics;
         }
     }
 }

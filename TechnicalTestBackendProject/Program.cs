@@ -12,6 +12,10 @@ using TechnicalTestBackendProject.Repository;
 using TechnicalTestBackendProject.DTOs;
 using TechnicalTestBackendProject.Validators;
 using FluentValidation;
+using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Models;
+using TechnicalTestBackendProject.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,6 +82,7 @@ builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IBoardRepository, BoardRepository>();
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+builder.Services.AddSingleton<ITokenRepository, TokenRepository>();
 
 // <---- Validators configuration ---->
 builder.Services.AddScoped<IValidator<UserCreateDTO>, SignupValidator>();
@@ -94,7 +99,32 @@ builder.Services.AddScoped<IValidator<TaskUpdateDTO>, UpdateTaskValidator>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{ 
+    // Add configuration for using JWT in Swagger UI
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "Please enter 'Bearer' [space] and then your JWT token",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
 
 var app = builder.Build();
 
@@ -110,6 +140,9 @@ app.UseCors(customCorsPolicy);
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
+
+// Custom middleware for token validation
+app.UseMiddleware<TokenValidationMiddleware>();
 
 app.UseAuthorization();
 

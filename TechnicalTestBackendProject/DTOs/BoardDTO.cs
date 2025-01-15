@@ -10,7 +10,7 @@ namespace TechnicalTestBackendProject.DTOs
         public string? Description { get; set; }
         public DateTime CreationDate { get; set; }
         [Required]
-        public string? CreatedById { get; set; }
+        public int CreatedById { get; set; }
         [ForeignKey("CreatedById")]
         public UserDTO? CreatedBy { get; set; }
         public ICollection<TaskDTO>? Tasks { get; set; }

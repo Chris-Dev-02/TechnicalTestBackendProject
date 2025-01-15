@@ -5,12 +5,12 @@ namespace TechnicalTestBackendProject.Services.Interfaces
 {
     public interface ITaskService
     {
-        Task<IEnumerable<TaskReadDTO>> Get();
-        Task<TaskReadDTO> GetById(int id, int userId);
-        Task<TaskReadDTO> Create(TaskCreateDTO entity);
-        Task<TaskReadDTO> Update(TaskUpdateDTO entity, int userId);
-        Task<bool> Delete(int id, int userId);
-        Task<IEnumerable<TaskReadDTO>> GetAllTaskByUserAndBoard(int userId, int boardId);
+        Task<IEnumerable<TaskReadDTO>> GetAllTasksAsync();
+        Task<TaskReadDTO> GetTaskByIdAsync(int id, int userId);
+        Task<TaskReadDTO> CreateTaskAsync(TaskCreateDTO entity);
+        Task<TaskReadDTO> UpdateTaskAsync(TaskUpdateDTO entity, int userId);
+        Task<bool> DeleteTaskAsync(int id, int userId);
+        Task<IEnumerable<TaskReadDTO>> GetTasksByBoardId(int boardId, int userId);
         Task<IEnumerable<string>> GetAllTasksStatus();
     }
 }

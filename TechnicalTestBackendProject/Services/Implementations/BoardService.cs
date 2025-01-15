@@ -18,22 +18,22 @@ namespace TechnicalTestBackendProject.Services.Implementations
             return await _mediator.Send(new GetAllBoardsQuery());
         }
 
-        public Task<IEnumerator<BoardReadDTO>> GetAllBoardsByUserAsync(int userId)
+        public async Task<IEnumerable<BoardReadDTO>> GetAllBoardsByUserAsync(int userId)
         {
-            throw new NotImplementedException();
+            return await _mediator.Send(new GetBoardsByUserIdQuery(userId));
         }
 
         public async Task<BoardReadDTO> GetBoardByIdAsync(int id, int userId)
         {
             var board = await _mediator.Send(new GetBoardByIdQuery(id));
-            if(board == null || board.CreatedById != userId.ToString()) return null;
+            if(board == null || board.CreatedById != userId) return null;
 
             return board;
         }
 
-        public Task GetStatisticsAsync()
+        public async Task<IEnumerable<BoardStatisticsDTO>> GetStatisticsAsync(int userId)
         {
-            throw new NotImplementedException();
+            return await _mediator.Send(new GetBoardsStatisticsQuery(userId));
         }
 
         public async Task<BoardReadDTO> CreateBoardAsync(BoardCreateDTO entity)
@@ -45,7 +45,7 @@ namespace TechnicalTestBackendProject.Services.Implementations
         public async Task<BoardReadDTO> UpdateBoardAsync(BoardUpdateDTO entity, int userId)
         {
             var board = await _mediator.Send(new GetBoardByIdQuery(entity.Id));
-            if (board == null || board.CreatedById != userId.ToString()) return null;
+            if (board == null || board.CreatedById != userId) return null;
 
             var boardUpdated = await _mediator.Send(new UpdateBoardCommand(entity));
 
@@ -55,7 +55,7 @@ namespace TechnicalTestBackendProject.Services.Implementations
         public async Task<bool> DeleteBoardAsync(int id, int userId)
         {
             var board = await _mediator.Send(new GetBoardByIdQuery(id));
-            if (board == null || board.CreatedById != userId.ToString()) return false;
+            if (board == null || board.CreatedById != userId) return false;
 
             var result = await _mediator.Send(new DeleteBoardCommand(id));
             return result;

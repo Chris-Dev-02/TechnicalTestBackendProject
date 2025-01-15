@@ -10,10 +10,10 @@ namespace TechnicalTestBackendProject.DTOs
         public string? Title { get; set; }
         public string? Description { get; set; }
         public DateTime CreationDate { get; set; }
-        [Required]
-        public string? BoardId { get; set; }
-        [ForeignKey("BoardId")]
+        public int BoardId { get; set; }
         public BoardDTO? Board { get; set; }
+        public int CreatedById { get; set; }
+        public UserDTO? CreatedBy { get; set; }
         public TaskStatusEnum TaskStatus { get; set; }
     }
 }
